@@ -1,0 +1,143 @@
+openapi: 3.0.3
+
+info:
+  title: payment-service API
+  version: 1.0.0
+  description: >
+    Service for fetching payments from the stub provider and storing payment history.
+
+servers:
+  - url: http://localhost:8080/api/v1
+
+tags:
+  - name: Payment
+    description: Payment operations
+
+paths:
+
+  /payments/fetch:
+    post:
+      tags:
+        - Payment
+      summary: Fetch payment from stub and save to DB
+      operationId: fetchPayment
+      description: >
+        Requests a random payment from the stub service,
+        persists it to the database and returns the saved entity.
+      responses:
+        '200':
+          description: Payment fetched from stub and saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponseDto'
+        '503':
+          description: Stub service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+
+  /payments:
+    get:
+      tags:
+        - Payment
+      summary: Get latest payments from DB
+      operationId: getPayments
+      description: Returns payments ordered by saved_at descending.
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Number of records to return (1-100, default 10)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: List of latest payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentResponseDto'
+
+components:
+  schemas:
+
+    PaymentResponseDto:
+      type: object
+      description: Payment record as stored in the database
+      required:
+        - id
+        - externalId
+        - fromAccount
+        - toAccount
+        - amount
+        - currency
+        - status
+        - savedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Internal database ID
+          example: 42
+        externalId:
+          type: string
+          format: uuid
+          description: Payment ID from the stub service
+          example: "a3f1c2d4-1234-4abc-9def-000000000001"
+        fromAccount:
+          type: string
+          description: Source account identifier
+          example: "ACC-042731"
+        toAccount:
+          type: string
+          description: Destination account identifier
+          example: "ACC-198203"
+        amount:
+          type: number
+          format: double
+          description: Payment amount
+          example: 1337.42
+        currency:
+          type: string
+          description: ISO 4217 currency code
+          enum: [USD, EUR, RUB, GBP, CHF]
+          example: "USD"
+        status:
+          type: string
+          description: Payment processing status
+          enum: [COMPLETED, PENDING, PROCESSING, FAILED]
+          example: "COMPLETED"
+        description:
+          type: string
+          description: Human-readable payment description
+          example: "Online subscription"
+        externalCreatedAt:
+          type: string
+          format: date-time
+          description: Payment creation timestamp from stub
+          example: "2024-05-01T12:00:00Z"
+        savedAt:
+          type: string
+          format: date-time
+          description: Timestamp when payment was saved to DB
+          example: "2024-05-01T12:00:00.123Z"
+
+    ErrorDto:
+      type: object
+      required:
+        - message
+        - timestamp
+      properties:
+        message:
+          type: string
+          example: "Stub service is unavailable"
+        timestamp:
+          type: string
+          format: date-time

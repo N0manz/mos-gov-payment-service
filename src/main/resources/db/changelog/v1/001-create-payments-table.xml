@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="001" author="payment-service">
+
+        <createTable tableName="payments">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="external_id" type="VARCHAR(64)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="from_account" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="to_account" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="NUMERIC(18,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="currency" type="VARCHAR(8)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="external_created_at" type="TIMESTAMPTZ"/>
+            <column name="saved_at" type="TIMESTAMPTZ" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Основной индекс для запроса последних платежей (ORDER BY saved_at DESC) -->
+        <createIndex tableName="payments" indexName="idx_payments_saved_at_desc">
+            <column name="saved_at" descending="true"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.5</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>org.mos</groupId>
+    <artifactId>payment-service</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>payment-service</name>
+
+    <properties>
+        <java.version>21</java.version>
+        <springdoc.version>2.5.0</springdoc.version>
+        <openapi-generator.version>7.15.0</openapi-generator.version>
+        <generated.api.package>org.mos.paymentservice.api.generated</generated.api.package>
+        <generated.model.package>org.mos.paymentservice.api.generated.dto</generated.model.package>
+        <stub.client.model.package>org.mos.paymentservice.stub.client.dto</stub.client.model.package>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-r2dbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>r2dbc-postgresql</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${openapi-generator.version}</version>
+                <executions>
+
+                    <execution>
+                        <id>generate-payment-api</id>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/payment-service-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>${generated.api.package}</apiPackage>
+                            <modelPackage>${generated.model.package}</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useJakartaEe>true</useJakartaEe>
+                                <reactive>true</reactive>
+                                <useTags>true</useTags>
+                                <documentationProvider>springdoc</documentationProvider>
+                                <dateLibrary>java8</dateLibrary>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                            </configOptions>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <output>${project.build.directory}/generated-sources/openapi</output>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>generate-stub-client-dto</id>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/stub-service-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <modelPackage>${stub.client.model.package}</modelPackage>
+                            <generateApis>false</generateApis>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <configOptions>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useJakartaEe>true</useJakartaEe>
+                                <openApiNullable>false</openApiNullable>
+                                <dateLibrary>java8</dateLibrary>
+                                <useBeanValidation>true</useBeanValidation>
+                            </configOptions>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <output>${project.build.directory}/generated-sources/openapi</output>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-generated-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

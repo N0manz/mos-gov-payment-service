@@ -1,0 +1,42 @@
+server:
+  port: ${SERVER_PORT}
+
+spring:
+  application:
+    name: ${SERVICE_NAME}
+  webflux:
+    base-path: ${URL_PREFIX}
+
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER:payments}
+    password: ${DB_PASS:payments}
+    pool:
+      initial-size: ${R2DBC_POOL_INITIAL_SIZE}
+      max-size: ${R2DBC_POOL_MAX_SIZE}
+      max-idle-time: ${R2DBC_POOL_MAX_IDLE_TIME}
+      validation-query: SELECT 1
+
+  liquibase:
+    change-log: ${CHANGE_LOG_PATH}
+    enabled: ${CHANGE_LOG_ENABLED}
+
+stub:
+  service:
+    url: ${STUB_SERVICE_URL}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus, metrics, info
+  prometheus:
+    metrics:
+      export:
+        enabled: ${PROMETHEUS_ENABLED}
+
+springdoc:
+  api-docs:
+    path: ${API_PATH}
+  swagger-ui:
+    path: ${SWAGGER_PATH}

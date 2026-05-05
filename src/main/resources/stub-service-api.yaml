@@ -1,0 +1,103 @@
+openapi: 3.0.3
+
+info:
+  title: payment-stub-service API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8081/api/v1
+
+tags:
+  - name: Payment
+    description: Payment operations
+
+paths:
+
+  /payment:
+
+    get:
+      tags:
+        - Payment
+      summary: Get random payment
+      operationId: getPayment
+      description: Returns a single randomly generated payment with a 200ms artificial delay.
+      responses:
+        '200':
+          description: Randomly generated payment object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentDto'
+              example:
+                id: "a3f1c2d4-1234-4abc-9def-000000000001"
+                fromAccount: "ACC-042731"
+                toAccount: "ACC-198203"
+                amount: 67.42
+                currency: "USD"
+                status: "COMPLETED"
+                description: "Online subscription"
+                createdAt: "2024-05-01T12:00:00Z"
+
+components:
+  schemas:
+
+    PaymentDto:
+      type: object
+      description: Payment data transfer object returned by the stub service
+      required:
+        - id
+        - fromAccount
+        - toAccount
+        - amount
+        - currency
+        - status
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique payment identifier
+          example: "a3f1c2d4-1234-4abc-9def-000000000001"
+        fromAccount:
+          type: string
+          description: Source account identifier
+          pattern: '^ACC-\d{6}$'
+          example: "ACC-042731"
+        toAccount:
+          type: string
+          description: Destination account identifier
+          pattern: '^ACC-\d{6}$'
+          example: "ACC-198203"
+        amount:
+          type: number
+          format: double
+          description: Payment amount
+          minimum: 0.01
+          example: 1337.42
+        currency:
+          type: string
+          description: ISO 4217 currency code
+          enum:
+            - USD
+            - EUR
+            - RUB
+          example: "USD"
+        status:
+          type: string
+          description: Payment processing status
+          enum:
+            - COMPLETED
+            - PENDING
+            - PROCESSING
+            - FAILED
+          example: "COMPLETED"
+        description:
+          type: string
+          description: Human-readable payment description
+          maxLength: 255
+          example: "Online subscription"
+        createdAt:
+          type: string
+          format: date-time
+          description: Payment creation timestamp (UTC)
+          example: "2024-05-01T12:00:00Z"
