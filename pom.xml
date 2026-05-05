@@ -19,9 +19,12 @@
         <java.version>21</java.version>
         <springdoc.version>2.5.0</springdoc.version>
         <openapi-generator.version>7.15.0</openapi-generator.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <generated.api.package>org.mos.paymentservice.api.generated</generated.api.package>
         <generated.model.package>org.mos.paymentservice.api.generated.dto</generated.model.package>
         <stub.client.model.package>org.mos.paymentservice.stub.client.dto</stub.client.model.package>
+
     </properties>
 
     <dependencies>
@@ -79,6 +82,12 @@
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
             <version>0.2.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
         </dependency>
 
         <dependency>
@@ -177,6 +186,23 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                    <compilerArgs>
+                        <arg>-Amapstruct.verbose=true</arg>
+                    </compilerArgs>
+                </configuration>
             </plugin>
 
             <plugin>

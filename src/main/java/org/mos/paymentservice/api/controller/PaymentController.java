@@ -2,8 +2,8 @@ package org.mos.paymentservice.api.controller;
 
 import org.mos.paymentservice.api.generated.PaymentApi;
 import org.mos.paymentservice.api.generated.dto.PaymentResponseDto;
+import org.mos.paymentservice.dao.mapper.PaymentMapper;
 import org.mos.paymentservice.service.Payment.PaymentService;
-import org.mos.paymentservice.util.PaymentUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
@@ -14,15 +14,19 @@ import reactor.core.publisher.Mono;
 public class PaymentController implements PaymentApi {
 
     private final PaymentService paymentService;
+    private final PaymentMapper paymentMapper;
+    public PaymentController(PaymentService paymentService,
+                             PaymentMapper paymentMapper) {
 
-    public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
+        this.paymentMapper = paymentMapper;
+
     }
 
     @Override
     public Mono<ResponseEntity<PaymentResponseDto>> fetchPayment(ServerWebExchange exchange) {
         return paymentService.fetchAndSave()
-                .map(PaymentUtil::toResponseDto)
+                .map(paymentMapper::toResponseDto)
                 .map(ResponseEntity::ok);
     }
 
@@ -30,7 +34,7 @@ public class PaymentController implements PaymentApi {
     public Mono<ResponseEntity<Flux<PaymentResponseDto>>> getPayments(
             Integer limit, ServerWebExchange exchange) {
         Flux<PaymentResponseDto> flux = paymentService.getLatest(limit)
-                .map(PaymentUtil::toResponseDto);
+                .map(paymentMapper::toResponseDto);
         return Mono.just(ResponseEntity.ok(flux));
     }
 }
